@@ -16,6 +16,10 @@ with microphone as source:
     recognizer.adjust_for_ambient_noise(source)
     audio = recognizer.listen(source)
 
+# send audio.frame_data, audio.sample_rate, audio.sample_width
+# recreate the audio class as follows:
+# audio = sr.AudioData(audio.frame_data, audio.sample_rate, audio.sample_width)
+
 # set up the response object
 response = {
     "success": True,
@@ -27,7 +31,7 @@ response = {
 # if a RequestError or UnknownValueError exception is caught,
 #     update the response object accordingly
 try:
-    response["transcription"] = recognizer.recognize_google(audio)
+    response["transcription"] = recognizer.recognize_sphinx(audio)
 except sr.RequestError:
     # API was unreachable or unresponsive
     response["success"] = False
@@ -36,4 +40,5 @@ except sr.UnknownValueError:
     # speech was unintelligible
     response["error"] = "Unable to recognize speech"
 
-print(response)
+speech = response['transcription']
+print(speech)
