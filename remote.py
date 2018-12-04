@@ -40,7 +40,7 @@ def main():
         except:
             d.write("could not translate")
     remote_end_time = time.time()
-    print("REMOTE COMPUTATION = " + str(remote_end_time-remote_start_time))
+    print("REMOTE COMPUTATION: " + str(remote_end_time-remote_start_time))
 
     ########################## SENDING DATA TO LOCAL DEVICE ##########################
     saving_start_time = time.time()
