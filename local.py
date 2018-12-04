@@ -22,8 +22,6 @@ def main():
     with microphone as source:
         recognizer.adjust_for_ambient_noise(source)
         audio = recognizer.listen(source)
-    local_end_time = time.time()
-    print("Elapsed time for local computation = " + str(local_end_time-local_start_time))
 
     # set up the response object
     response = {
@@ -37,6 +35,7 @@ def main():
     #     update the response object accordingly
     try:
         response["transcription"] = recognizer.recognize_sphinx(audio)
+        print(response['transcription'])
     except sr.RequestError:
         # API was unreachable or unresponsive
         response["success"] = False
@@ -45,7 +44,9 @@ def main():
         # speech was unintelligible
         response["error"] = "Unable to recognize speech"
 
-    print(response['transcription'])
+    local_end_time = time.time()
+    print("Elapsed time for local computation = " + str(local_end_time-local_start_time))
+
 
     saving_start_time = time.time()
     np.save("audio.npy", audio.frame_data)
