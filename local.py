@@ -2,12 +2,14 @@ import speech_recognition as sr
 import time
 import numpy as np
 import sys
+import paramiko
+from scp import SCPClient
 
 def main():
-    for index, name in enumerate(sr.Microphone.list_microphone_names()):
-        print("Microphone with name \"{1}\" found for `Microphone(device_index={0})`".format(index, name))
+
+    ########################### RUNNING RNN LOCALLY ###########################
     recognizer = sr.Recognizer()
-    microphone = sr.Microphone(device_index=3)
+    microphone = sr.Microphone()
 
     if not isinstance(recognizer, sr.Recognizer):
         raise TypeError("`recognizer` must be `Recognizer` instance")
@@ -15,48 +17,43 @@ def main():
     if not isinstance(microphone, sr.Microphone):
         raise TypeError("`microphone` must be `Microphone` instance")
 
-    # adjust the recognizer sensitivity to ambient noise and record audio
-    # from the microphone
-    # audio.frame_data, audio.sample_rate, audio.sample_width
     with microphone as source:
         recognizer.adjust_for_ambient_noise(source)
         audio = recognizer.listen(source)
 
-    # set up the response object
     response = {
         "success": True,
         "error": None,
         "transcription": None
     }
 
-    # try recognizing the speech in the recording
-    # if a RequestError or UnknownValueError exception is caught,
-    #     update the response object accordingly
     local_start_time = time.time()
     try:
-        response["transcription"] = recognizer.recognize_sphinx(audio)
-        print(response['transcription'])
+        response["transcription"] = recognizer.recognize_google(audio)
+        print("TRANSLATION: "+str(response['transcription']))
     except sr.RequestError:
-        # API was unreachable or unresponsive
         response["success"] = False
         response["error"] = "API unavailable"
     except sr.UnknownValueError:
-        # speech was unintelligible
         response["error"] = "Unable to recognize speech"
-
     local_end_time = time.time()
-    print("Elapsed time for local computation = " + str(local_end_time-local_start_time))
+    print("LOCAL COMPUTATION: " + str(local_end_time-local_start_time))
 
-
+    ########################## SENDING DATA TO REMOTE SERVER ##########################
     saving_start_time = time.time()
-    np.save("audio.npy", audio.frame_data)
-    np.save("sample_rate.npy", audio.sample_rate)
-    np.save("sample_width.npy", audio.sample_width)
-    with open(str(sys.argv[1]), "w+") as d:
-        d.write(response['transcription'])
+    client = paramiko.SSHClient()
+    client.load_system_host_keys()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(hostname="172.20.10.2",username="tushitagupta",password="i8MyDog2!")
+    scp = SCPClient(client.get_transport())
 
+    with open("audio.wav", "wb") as d:
+        d.write(audio.get_wav_data())
+
+    scp.put("audio.wav", "audio.wav")
     saving_end_time = time.time()
-    print("Elapsed time for saving data = " + str(saving_end_time-saving_start_time))
+
+    print("SEND TO REMOTE SERVER: " + str(saving_end_time-saving_start_time))
 
 if __name__ == '__main__':
     main()
