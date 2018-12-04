@@ -18,7 +18,6 @@ def main():
     # adjust the recognizer sensitivity to ambient noise and record audio
     # from the microphone
     # audio.frame_data, audio.sample_rate, audio.sample_width
-    local_start_time = time.time()
     with microphone as source:
         recognizer.adjust_for_ambient_noise(source)
         audio = recognizer.listen(source)
@@ -33,6 +32,7 @@ def main():
     # try recognizing the speech in the recording
     # if a RequestError or UnknownValueError exception is caught,
     #     update the response object accordingly
+    local_start_time = time.time()
     try:
         response["transcription"] = recognizer.recognize_sphinx(audio)
         print(response['transcription'])
