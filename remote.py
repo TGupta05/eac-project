@@ -33,7 +33,7 @@ def main():
     except sr.UnknownValueError:
         response["error"] = "Unable to recognize speech"
     remote_end_time = time.time()
-    print("REMOTE COMPUTATION: " + str(remote_end_time-remote_start_time))
+    
 
     ########################## SENDING DATA TO LOCAL DEVICE ##########################
     saving_start_time = time.time()
@@ -49,8 +49,12 @@ def main():
             print("TRANSLATION: "+str(response['transcription']))
         except:
             d.write("could not translate")
-    scp.put("results.txt", "results.txt")
+
+    scp.put("results.txt", "/home/pi/Documents/eac-project/results.txt")
+
     saving_end_time = time.time()
+
+    print("REMOTE COMPUTATION: " + str(remote_end_time-remote_start_time))
     print("SEND TO LOCAL DEVICE: " + str(saving_end_time-saving_start_time))
 
 if __name__ == '__main__':
