@@ -27,6 +27,7 @@ def main():
         "transcription": None
     }
 
+    print("starting translation")
     local_start_time = time.time()
     try:
         response["transcription"] = recognizer.recognize_google(audio)
@@ -36,15 +37,15 @@ def main():
     except sr.UnknownValueError:
         response["error"] = "Unable to recognize speech"
     local_end_time = time.time()
+    print("done translating")
     
     try:
         print("TRANSLATION: "+str(response['transcription']))
     except:
         pass
 
-    print("LOCAL COMPUTATION: " + str(local_end_time-local_start_time))
-
     ########################## SENDING DATA TO REMOTE SERVER ##########################
+    print("start sending")
     saving_start_time = time.time()
     client = paramiko.SSHClient()
     client.load_system_host_keys()
@@ -58,8 +59,9 @@ def main():
     scp.put("audio.wav", "Documents/eac-project/audio.wav")
 
     saving_end_time = time.time()
+    print("done sending")
 
-    
+    print("LOCAL COMPUTATION: " + str(local_end_time-local_start_time))
     print("SEND TO REMOTE SERVER: " + str(saving_end_time-saving_start_time))
 
 if __name__ == '__main__':
