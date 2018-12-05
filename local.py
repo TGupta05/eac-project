@@ -42,6 +42,8 @@ def main():
     except:
         pass
 
+    print("LOCAL COMPUTATION: " + str(local_end_time-local_start_time))
+
     ########################## SENDING DATA TO REMOTE SERVER ##########################
     saving_start_time = time.time()
     client = paramiko.SSHClient()
@@ -57,7 +59,7 @@ def main():
 
     saving_end_time = time.time()
 
-    print("LOCAL COMPUTATION: " + str(local_end_time-local_start_time))
+    
     print("SEND TO REMOTE SERVER: " + str(saving_end_time-saving_start_time))
 
 if __name__ == '__main__':

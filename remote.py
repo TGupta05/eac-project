@@ -33,8 +33,9 @@ def main():
     except sr.UnknownValueError:
         response["error"] = "Unable to recognize speech"
     remote_end_time = time.time()
-    
 
+    print("REMOTE COMPUTATION: " + str(remote_end_time-remote_start_time))
+    
     ########################## SENDING DATA TO LOCAL DEVICE ##########################
     saving_start_time = time.time()
     client = paramiko.SSHClient()
@@ -54,7 +55,6 @@ def main():
 
     saving_end_time = time.time()
 
-    print("REMOTE COMPUTATION: " + str(remote_end_time-remote_start_time))
     print("SEND TO LOCAL DEVICE: " + str(saving_end_time-saving_start_time))
 
 if __name__ == '__main__':
