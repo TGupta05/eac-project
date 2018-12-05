@@ -30,13 +30,18 @@ def main():
     local_start_time = time.time()
     try:
         response["transcription"] = recognizer.recognize_google(audio)
-        print("TRANSLATION: "+str(response['transcription']))
     except sr.RequestError:
         response["success"] = False
         response["error"] = "API unavailable"
     except sr.UnknownValueError:
         response["error"] = "Unable to recognize speech"
     local_end_time = time.time()
+    
+    try:
+        print("TRANSLATION: "+str(response['transcription']))
+    except:
+        pass
+
     print("LOCAL COMPUTATION: " + str(local_end_time-local_start_time))
 
     ########################## SENDING DATA TO REMOTE SERVER ##########################
